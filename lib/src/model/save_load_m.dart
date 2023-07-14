@@ -1,20 +1,44 @@
 import 'dart:convert';
-import './note_m.dart';
-import 'package:flutter/material.dart';
 import 'dart:io';
+import 'dart:async';
+import 'package:flutter/cupertino.dart';
+
+import './note_m.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SaveLoad {
-  static const String _fileName = "notes.json";
+  static File? _file;
 
-  static String? _savesPath;
+  static Future<void> load(Function onLoaded) async {}
 
-  static List<Note> loadNotes() {
-    List<Note> notes = [];
-    _savesPath ??= "${Directory.current}/$_fileName";
+  static Future<void> loadNotes(Function onLoaded) async {
 
-    File file = File(_savesPath ??= "");
+    // Performing check if android system was innited
+    WidgetsFlutterBinding.ensureInitialized();
+    final prefs = await SharedPreferences.getInstance();
 
-    if(!file.existsSync()) file.create();
+    Set<String> noteKeys = prefs.getKeys();
 
+    List<String> vals = [];
+
+    for (String key in noteKeys) {
+      String? val = prefs.getString(key);
+      if (val != null) Note.fromJSON(jsonDecode(val));
+    }
+
+    onLoaded();
+  }
+
+  static Future<void> saveNotes() async {
+
+    // Performing check if android system was innited
+    WidgetsFlutterBinding.ensureInitialized();
+
+    final prefs = await SharedPreferences.getInstance();
+
+    List<Note> notes = Note.allNotes;
+    for (Note note in Note.allNotes) {
+      prefs.setString(note.id.toString(), jsonEncode(note.jsonMap));
+    }
   }
 }

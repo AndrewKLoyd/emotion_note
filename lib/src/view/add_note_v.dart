@@ -17,7 +17,7 @@ class _AddNoteState extends State<AddNote> {
   List<DropdownMenuItem<Emotion>> emotions = Emotion.values
       .map((e) => DropdownMenuItem<Emotion>(
             value: e,
-            child: Text(e.toString().split('.').last),
+            child: Text(e.toString().split('.').last.toUpperCase()),
           ))
       .toList();
 
@@ -25,15 +25,29 @@ class _AddNoteState extends State<AddNote> {
   TextEditingController triggerController = TextEditingController();
   TextEditingController solveController = TextEditingController();
 
+  void onSubmit(String val) {
+    if (emotion == Emotion.none ||
+        triggerController.text == "" ||
+        solveController.text == "") return;
+    trigger = triggerController.text;
+    solveWays = solveController.text;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: Theme.of(context).colorScheme.secondaryContainer,
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Emotions dropdown
           DropdownButton<Emotion>(
+              dropdownColor: Theme.of(context).colorScheme.secondaryContainer,
+              icon: const Icon(
+                Icons.arrow_drop_down,
+                color: Colors.white,
+              ),
               value: emotion,
               items: emotions,
               onChanged: (Emotion? e) {
@@ -48,25 +62,35 @@ class _AddNoteState extends State<AddNote> {
             keyboardType: TextInputType.multiline,
             minLines: 1,
             maxLines: 10,
-            decoration: const InputDecoration()
-                .applyDefaults(Theme.of(context).inputDecorationTheme),
+            decoration: InputDecoration(
+              label: Text(
+                "Trigger",
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ).applyDefaults(Theme.of(context).inputDecorationTheme),
             onChanged: (_) {
               setState(() {
                 trigger = triggerController.text;
               });
             },
+            onSubmitted: onSubmit,
           ),
           TextField(
             controller: solveController,
             minLines: 1,
             maxLines: 10,
-            decoration: const InputDecoration()
-                .applyDefaults(Theme.of(context).inputDecorationTheme),
+            decoration: InputDecoration(
+              label: Text(
+                "Solve",
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ).applyDefaults(Theme.of(context).inputDecorationTheme),
             onChanged: (_) {
               setState(() {
                 solveWays = solveController.text;
               });
             },
+            onSubmitted: onSubmit,
           ),
 
           Container(
@@ -84,7 +108,10 @@ class _AddNoteState extends State<AddNote> {
                   // Closing modal sheets
                   Navigator.pop(context);
                 },
-                child: const Text("Add emotion")),
+                child: Text(
+                  "Add emotion",
+                  style: Theme.of(context).textTheme.titleSmall,
+                )),
           ),
         ],
       ),

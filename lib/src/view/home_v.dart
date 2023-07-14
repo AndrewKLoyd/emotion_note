@@ -15,26 +15,26 @@ class HomeView extends StatelessWidget {
         toolbarHeight: MediaQuery.sizeOf(context).height * 0.1,
         title: const Text("Notes"),
       ),
-      body: SizedBox(
+      body: Container(
+          color: Theme.of(context).colorScheme.background,
           height: MediaQuery.sizeOf(context).height * 0.9,
           child: Column(
             children: [
               NoteList(),
             ],
           )),
-      //floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: IconButton(
+            floatingActionButton: IconButton(
         icon: const Icon(
           Icons.add_circle_rounded,
           size: 64,
-
         ),
         padding: const EdgeInsets.all(0),
-
         color: Theme.of(context).colorScheme.primary,
         onPressed: () {
           showModalBottomSheet(
             context: context,
+            isScrollControlled: true,
+            useSafeArea: true,
             builder: (context) => AddNote(),
           );
         },
